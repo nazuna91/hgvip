@@ -117,8 +117,17 @@ public class XposedInit implements IXposedHookLoadPackage {
                 f.setAccessible(true);
                 Class<?> t = f.getType();
                 if (t == int.class) {
-                    int cur = f.getInt(user);
-                    if (cur <= 0) { f.setInt(user, 999); sb.append(" ").append(f.getName()).append("=999"); changed++; }
+                    // vipId 是暗网卡的 id（6），其他 int 拉满
+                    String ann = jsonName(f);
+                    boolean isVipId = ann != null && ann.equalsIgnoreCase("vipId");
+                    if (isVipId) {
+                        f.setInt(user, 6);
+                        sb.append(" ").append(f.getName()).append("=6(dark)");
+                        changed++;
+                    } else {
+                        int cur = f.getInt(user);
+                        if (cur <= 0) { f.setInt(user, 999); sb.append(" ").append(f.getName()).append("=999"); changed++; }
+                    }
                 } else if (t == long.class) {
                     long cur = f.getLong(user);
                     if (cur <= 0) { f.setLong(user, 4102444800000L); sb.append(" ").append(f.getName()).append("=2100"); changed++; }
