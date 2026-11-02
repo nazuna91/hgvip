@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HGVIP</string>
+    <string-array name="xposed_scope">
+        <item>a4256.a752034a.ac7397272053</item>
+    </string-array>
+</resources>
