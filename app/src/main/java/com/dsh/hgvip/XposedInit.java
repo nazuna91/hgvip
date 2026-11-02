@@ -23,11 +23,13 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class XposedInit implements IXposedHookLoadPackage {
 
     private static final String TAG = "HGVIP";
-    private static final String TARGET = "a4256.a752034a.ac7397272053";
+    private static final String[] TARGETS = { "a4256.a752034a.ac7397272053", "c79cb.c96a14df.c64797012005" };
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lp) {
-        if (!lp.packageName.equals(TARGET)) return;
+        boolean hit = false;
+        for (String t : TARGETS) { if (t.equals(lp.packageName)) { hit = true; break; } }
+        if (!hit) return;
         log("loaded in " + lp.packageName);
 
         hookUserAdapter(lp.classLoader);
