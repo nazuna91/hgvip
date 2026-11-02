@@ -111,6 +111,14 @@ public class XposedInit implements IXposedHookLoadPackage {
             } catch (Throwable ignored) {}
         }
         if (changed > 0) log("patched user: " + changed + " vip fields");
+        else {
+            StringBuilder sb = new StringBuilder("user fields: ");
+            for (Field f2 : cls.getDeclaredFields()) {
+                if (Modifier.isStatic(f2.getModifiers())) continue;
+                sb.append(f2.getName()).append("(").append(f2.getType().getSimpleName()).append(") ");
+            }
+            log(sb.toString());
+        }
     }
 
     /** 读 Moshi @Json(name=...) 注解 */
