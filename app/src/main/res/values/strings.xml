@@ -3,5 +3,6 @@
     <string name="app_name">HGVIP</string>
     <string-array name="xposed_scope">
         <item>a4256.a752034a.ac7397272053</item>
+        <item>c79cb.c96a14df.c64797012005</item>
     </string-array>
 </resources>
