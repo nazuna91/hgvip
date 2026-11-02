@@ -33,6 +33,7 @@ public class XposedInit implements IXposedHookLoadPackage {
         hookUserAdapter(lp.classLoader);
         hookUserConstructor(lp.classLoader);
         hookBenefit(lp.classLoader);
+        hookPlayInfo(lp.classLoader);
     }
 
     /** hook UserJsonAdapter 里所有返回 User 的方法（混淆名 a/e 之类） */
@@ -103,6 +104,32 @@ public class XposedInit implements IXposedHookLoadPackage {
             log("hooked MemberBenefit constructors");
         } catch (Throwable t) {
             log("MemberBenefit fail: " + t.getMessage());
+        }
+    }
+
+    /** hook PlayInfo：把试看索引清零（解除试看限制） */
+    private void hookPlayInfo(ClassLoader cl) {
+        try {
+            Class<?> cls = XposedHelpers.findClass("com.video.business.videoDetail.PlayInfo", cl);
+            for (java.lang.reflect.Constructor<?> c : cls.getDeclaredConstructors()) {
+                try {
+                    XposedBridge.hookMethod(c, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) {
+                            Object obj = param.thisObject;
+                            if (obj == null) return;
+                            try {
+                                Field f = obj.getClass().getDeclaredField("currentTryIndex");
+                                f.setAccessible(true);
+                                f.setInt(obj, 0);
+                            } catch (Throwable ignored) {}
+                        }
+                    });
+                } catch (Throwable ignored) {}
+            }
+            log("hooked PlayInfo constructors");
+        } catch (Throwable t) {
+            log("PlayInfo fail: " + t.getMessage());
         }
     }
 
