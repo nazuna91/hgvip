@@ -139,6 +139,20 @@ public class XposedInit implements IXposedHookLoadPackage {
         log(sb.toString() + " (changed=" + changed + ")");
     }
 
+    /** 读 Moshi @Json(name=...) 注解 */
+    private String jsonName(Field f) {
+        try {
+            for (java.lang.annotation.Annotation a : f.getAnnotations()) {
+                String an = a.annotationType().getName();
+                if (!an.endsWith("Json")) continue;
+                java.lang.reflect.Method m = a.annotationType().getMethod("name");
+                Object v = m.invoke(a);
+                if (v instanceof String) return (String) v;
+            }
+        } catch (Throwable ignored) {}
+        return null;
+    }
+
     private void log(String msg) {
         XposedBridge.log("[" + TAG + "] " + msg);
         Log.i(TAG, msg);
