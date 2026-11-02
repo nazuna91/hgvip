@@ -74,8 +74,36 @@ public class XposedInit implements IXposedHookLoadPackage {
                 } catch (Throwable ignored) {}
             }
             log("hooked User constructors");
+        hookBenefit(lp.classLoader);
         } catch (Throwable t) {
             log("user class fail: " + t.getMessage());
+        }
+    }
+
+    /** hook MemberBenefit 的构造，把权益 boolean 全设 true */
+    private void hookBenefit(ClassLoader cl) {
+        try {
+            Class<?> cls = XposedHelpers.findClass("com.video.bean.MemberBenefit", cl);
+            for (java.lang.reflect.Constructor<?> c : cls.getDeclaredConstructors()) {
+                try {
+                    XposedBridge.hookMethod(c, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(MethodHookParam param) {
+                            Object obj = param.thisObject;
+                            if (obj == null) return;
+                            for (java.lang.reflect.Field f : obj.getClass().getDeclaredFields()) {
+                                if (Modifier.isStatic(f.getModifiers())) continue;
+                                if (f.getType() == boolean.class) {
+                                    try { f.setAccessible(true); f.setBoolean(obj, true); } catch (Throwable ignored) {}
+                                }
+                            }
+                        }
+                    });
+                } catch (Throwable ignored) {}
+            }
+            log("hooked MemberBenefit constructors");
+        } catch (Throwable t) {
+            log("MemberBenefit fail: " + t.getMessage());
         }
     }
 
